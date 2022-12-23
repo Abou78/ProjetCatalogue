@@ -7,6 +7,7 @@ $titre = "Un catalogue de produits"; //Mettre le nom du titre de la page que vou
 require_once ('catalogue.dao.php');
 $cours = getCoursBD();
 ?>
+<a href="ajout.php" class="btn btn-primary">Ajout</a>
 
 <div class="row no-gutters">
     <?php foreach($cours as $c) : ?>
@@ -17,9 +18,21 @@ $cours = getCoursBD();
                     <h5 class="card-title"><?= $c['libelle'] ?></h5>
                     <p class="card-text"><?= $c['description'] ?></p>
                     <?php
-                        $typeTxt = getNomType($c['idtype']);
+                        $typeTxt = getNomType($c['idType']);
                     ?>
                     <span class='badge badge-primary'><?= $typeTxt['libelle'] ?></span>
+                </div>
+                <div class="row no-gutters p-2">
+                    <form action="" method="get" class="col-6 text-center">
+                        <input type="hidden" name="idCours" value="<?= $c['idCours'] ?>">
+                        <input type="hidden" name="type" value="modification">
+                        <input type="submit" value="modifier" class="btn btn-primary">
+                    </form>
+                    <form action="" method="get" class="col-6 text-center">
+                        <input type="hidden" name="idCours" value="<?= $c['idCours'] ?>">
+                        <input type="hidden" name="type" value="suppression">
+                        <input type="submit" value="supprimer" class="btn btn-danger">
+                    </form>
                 </div>
             </div>
         </div>
