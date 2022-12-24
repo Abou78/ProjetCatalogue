@@ -5,6 +5,31 @@ $titre = "Un catalogue de produits"; //Mettre le nom du titre de la page que vou
 <!-- mettre ici le code -->
 <?php
 require_once ('catalogue.dao.php');
+
+if (isset($_GET['type']) && $_GET['type'] === "suppression"){
+    $coursNameToDelete = getCoursNameToDeleteBD($_GET['idCours']);
+?>
+    <div class="alert alert-warning" role="alert">
+        Voulez-vous vraiment <b class="text-danger">supprimer</b> l'élement <b><?= $coursNameToDelete ?></b> de la bd ?
+        <a href="?delete=<?= $_GET['idCours'] ?>" class="btn btn-danger">Supprimer !</a>
+        <a href="index.php" class="btn btn-success">Annuler !</a>
+    </div>
+<?php
+}
+
+if (isset($_GET['delete'])){
+    $success = deleteCoursBD($_GET['delete']);
+    if ($success){ ?>
+        <div class="alert alert-success" role="alert">
+            la suppression s'est bien déroulée !
+        </div>
+    <?php } else{ ?>
+        <div class="alert alert-danger" role="alert">
+            la suppression n'a pas fonctionée !
+        </div>
+    <?php }
+}
+
 $cours = getCoursBD();
 ?>
 <a href="ajout.php" class="btn btn-primary">Ajout</a>
