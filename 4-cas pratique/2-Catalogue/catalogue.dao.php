@@ -9,6 +9,14 @@ function getCoursBD(){
     return $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getTypesBD(){
+    $pdo = MonPDO::getPDO();
+    $req = "SELECT * FROM type";
+    $stmt = $pdo->prepare($req);
+    $stmt->execute();
+    return $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function getNomType($idType){
     $pdo = MonPDO::getPDO();
     $req = "SELECT libelle FROM type WHERE idType = :idType";
@@ -35,4 +43,15 @@ function deleteCoursBD($idCours){
     $stmt->bindValue(":idCours", "$idCours" ,PDO::PARAM_INT);
     return $stmt->execute();
 
+}
+
+function modifierCoursBD($idCours, $libelle, $description, $idType){
+    $pdo = MonPDO::getPDO();
+    $req = 'UPDATE cours set libelle = :libelle, description = :desc, idType = :idType WHERE idCours = :idCours';
+    $stmt = $pdo->prepare($req);
+    $stmt->bindValue(":idCours", "$idCours" ,PDO::PARAM_INT);
+    $stmt->bindValue(":libelle", "$libelle" ,PDO::PARAM_STR);
+    $stmt->bindValue(":desc", "$description" ,PDO::PARAM_STR);
+    $stmt->bindValue(":idType", "$idType" ,PDO::PARAM_INT);
+    return $stmt->execute();
 }

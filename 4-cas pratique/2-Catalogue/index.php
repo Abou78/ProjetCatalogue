@@ -6,6 +6,7 @@ $titre = "Un catalogue de produits"; //Mettre le nom du titre de la page que vou
 <?php
 require_once ('catalogue.dao.php');
 
+//VERIFICATION DE SUPPRESSION
 if (isset($_GET['type']) && $_GET['type'] === "suppression"){
     $coursNameToDelete = getCoursNameToDeleteBD($_GET['idCours']);
 ?>
@@ -17,6 +18,7 @@ if (isset($_GET['type']) && $_GET['type'] === "suppression"){
 <?php
 }
 
+//SUPPRESSION
 if (isset($_GET['delete'])){
     $success = deleteCoursBD($_GET['delete']);
     if ($success){ ?>
@@ -30,7 +32,22 @@ if (isset($_GET['delete'])){
     <?php }
 }
 
+//MODIFICATION
+if (isset($_POST['type']) && $_POST['type'] === "modificationEtape2"){
+    $success = modifierCoursBD($_POST['idCours'], $_POST['nomCours'], $_POST['descCours'], $_POST['idType']);
+    if ($success){ ?>
+        <div class="alert alert-success" role="alert">
+            la modification s'est bien déroulée !
+        </div>
+    <?php } else{ ?>
+        <div class="alert alert-danger" role="alert">
+            la modification n'a pas fonctionée !
+        </div>
+    <?php }
+}
+
 $cours = getCoursBD();
+$types = getTypesBD();
 ?>
 <a href="ajout.php" class="btn btn-primary">Ajout</a>
 
@@ -38,6 +55,7 @@ $cours = getCoursBD();
     <?php foreach($cours as $c) : ?>
         <div class="col-4">
             <div class="card m-2" style="">
+                <?php if (!isset($_GET['type']) || $_GET['type'] !== 'modification' || $_GET['idCours'] !== $c['idCours']){ ?>
                 <img src="source/<?= $c['image'] ?>" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title"><?= $c['libelle'] ?></h5>
@@ -59,11 +77,43 @@ $cours = getCoursBD();
                         <input type="submit" value="supprimer" class="btn btn-danger">
                     </form>
                 </div>
+                <?php  }else{ ?>
+                    <form action="" method="post">
+                        <input type="hidden" name="type" value="modificationEtape2"/>
+                        <input type="hidden" name="idCours" value="<?= $c['idCours'] ?>">
+                        <img src="source/<?= $c['image'] ?>" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Nom du cours : </label>
+                                <input type="text" class="form-control" name="nomCours" value="<?= $c['libelle'] ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Description : </label>
+                                <textarea name="descCours" rows="3" class="form-control"> <?= $c['description'] ?></textarea>
+                            </div>
+                            <select name="idType" class="form-control">
+                                <?php foreach ($types as $type) { ?>
+                                    <option value="<?= $type['idType'] ?>"
+                                     <?= ($type['idType'] === $c['idType']) ? "selected" : "" ?>
+                                    ><?= $type['libelle'] ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="row no-gutters p-2">
+                            <div class="col text-center">
+                                <input type="submit" value="Valider" class="btn btn-success">
+                            </div>
+                            <div class="col text-center">
+                                <input type="submit" value="Annuler" onclick="cancelModification(event)" class="btn btn-danger">
+                            </div>
+                        </div>
+                    </form>
+                <?php } ?>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
-
+<script src="monJS.js"></script>
 <?php
 /************************
  * NE PAS MODIFIER
