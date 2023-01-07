@@ -21,3 +21,7 @@ function ajoutImage($file, $dir, $nom){
         throw new Exception("l'ajout de l'image n'a pas fonctionné");
     else return ($nom . "_". $file['name']);
 }
+
+function deleteImage($folder,$nom){
+    unlink($folder.$nom);
+}

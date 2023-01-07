@@ -45,14 +45,19 @@ function deleteCoursBD($idCours){
 
 }
 
-function modifierCoursBD($idCours, $libelle, $description, $idType){
+function modifierCoursBD($idCours, $libelle, $description, $idType, $nomImage){
     $pdo = MonPDO::getPDO();
-    $req = 'UPDATE cours set libelle = :libelle, description = :desc, idType = :idType WHERE idCours = :idCours';
+    $req = '
+    UPDATE cours 
+    set libelle = :libelle, description = :desc, idType = :idType';
+    if ($nomImage !== "") $req .= ', image = :image ';
+    $req .=' WHERE idCours = :idCours';
     $stmt = $pdo->prepare($req);
     $stmt->bindValue(":idCours", "$idCours" ,PDO::PARAM_INT);
     $stmt->bindValue(":libelle", "$libelle" ,PDO::PARAM_STR);
     $stmt->bindValue(":desc", "$description" ,PDO::PARAM_STR);
     $stmt->bindValue(":idType", "$idType" ,PDO::PARAM_INT);
+    if ($nomImage !== "") $stmt->bindValue(":image", "$nomImage" ,PDO::PARAM_STR);
     return $stmt->execute();
 }
 
@@ -66,4 +71,14 @@ function ajoutCoursBD($libelle, $description, $idType, $image){
     $stmt->bindValue(":idType", "$idType" ,PDO::PARAM_INT);
     $stmt->bindValue(":image", "$image" ,PDO::PARAM_STR);
     return $stmt->execute();
+}
+
+function getImageToDelete($idCours){
+    $pdo = MonPDO::getPDO();
+    $req = 'SELECT image FROM cours WHERE idCours = :idCours';
+    $stmt = $pdo->prepare($req);
+    $stmt->bindValue(":idCours", "$idCours" ,PDO::PARAM_INT);
+    $stmt->execute();
+    $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $res['image'];
 }
