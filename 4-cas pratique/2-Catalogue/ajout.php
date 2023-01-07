@@ -5,23 +5,31 @@ $titre = "Page d'ajout d'un produit"; //Mettre le nom du titre de la page que vo
     <!-- mettre ici le code -->
 <?php
 require_once ('catalogue.dao.php');
+require_once ('gestionImage.php');
 
 if (isset($_POST['libelle'])){
-    $success = ajoutCoursBD($_POST['libelle'], $_POST['description'], $_POST['idType'], "nomCours.png");
-    if ($success){ ?>
-        <div class="alert alert-success" role="alert">
-            l'ajout s'est bien déroulé !
-        </div>
-    <?php } else{ ?>
-        <div class="alert alert-danger" role="alert">
-            l'ajout' n'a pas fonctioné !
-        </div>
-    <?php }
+    $fileImage = $_FILES['imageCours'];
+    $repertoire = "source/";
+    try {
+        $nomImage = ajoutImage($fileImage,$repertoire,$_POST['libelle']);
+        $success = ajoutCoursBD($_POST['libelle'], $_POST['description'], $_POST['idType'], $nomImage);
+        if ($success){ ?>
+            <div class="alert alert-success" role="alert">
+                l'ajout s'est bien déroulé !
+            </div>
+        <?php } else{ ?>
+            <div class="alert alert-danger" role="alert">
+                l'ajout' n'a pas fonctioné !
+            </div>
+        <?php }
+    } catch (Exception $e){
+        echo $e->getMessage();
+    }
 }
 $types = getTypesBD();
 ?>
 
-<form method="post" action="">
+<form method="post" action="" enctype="multipart/form-data">
     <div class="form-group">
         <label>Nom : </label>
         <input type="text" class="form-control" name="libelle" placeholder="Nom du cours" required>
